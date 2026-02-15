@@ -1,0 +1,6 @@
+0000000000000000000000000000000000000000 67b5d3550dbb8a44c2bece24897edd2d07a82d4c root <root@061ee39c-4d42-4023-b9b4-4db55d65b996.mimvmn1ww3huhhjmzljqefhnig.rx.internal.cloudapp.net> 1759988807 +0000	clone: from https://github.com/876433/gofit
+67b5d3550dbb8a44c2bece24897edd2d07a82d4c 1b52a0983f80604a6c5a5a2b800c79c6ff90b096 876433 <piyushgarg1857@gmail.com> 1769952878 +0530	commit: Refactor: GoFit Production Ready with Supabase and Mapbox
+1b52a0983f80604a6c5a5a2b800c79c6ff90b096 8315de335345e7adcb5060450e58d782019ce0a5 876433 <piyushgarg1857@gmail.com> 1769971087 +0530	commit: Feat: Territory Capture, Run Tracking, RPG Profile & Auth Persistence
+8315de335345e7adcb5060450e58d782019ce0a5 55b79594a63a3c959b57aef13c8ba09fd172cb21 876433 <piyushgarg1857@gmail.com> 1769973804 +0530	commit: Feat: Light/Dark Mode, Sound Effects, and Map Fixes
+55b79594a63a3c959b57aef13c8ba09fd172cb21 67573981e25c54b8252ed99279af7189dcad9357 876433 <piyushgarg1857@gmail.com> 1769975291 +0530	commit: feat: Add HP system, Social features skeleton, and User Search
+67573981e25c54b8252ed99279af7189dcad9357 47c6782365c05b9c4e3cf5d521bf2879779ba5bb 876433 <piyushgarg1857@gmail.com> 1769976268 +0530	commit: chore: Relax lint rules to fix build and fix useEffect deps
