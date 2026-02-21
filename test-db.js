@@ -1,18 +1,16 @@
 
 const { MongoClient } = require('mongodb');
-const uri = "mongodb://atlas-sql-6991725871e9178181d3986e-gaxngb.z.query.mongodb.net/gofitt?ssl=true&authSource=admin";
+const uri = "mongodb+srv://piyushgarg8764_db_user:xZHEOQUHGiXf9ph6@cluster0.frsxxwd.mongodb.net/gofitt?retryWrites=true&w=majority&appName=Cluster0";
 
 async function run() {
-    const client = new MongoClient(uri, { serverSelectionTimeoutMS: 5000 });
+    const client = new MongoClient(uri, { serverSelectionTimeoutMS: 10000 });
     try {
         console.log("Connecting...");
         await client.connect();
         console.log("Connected!");
-        const db = client.db("gofitt");
-        const collections = await db.listCollections().toArray();
-        console.log("Collections:", collections);
     } catch (err) {
-        console.error("Connection error:", err.message);
+        console.log("ERROR_MESSAGE:", err.message);
+        if (err.reason) console.log("REASON:", err.reason);
     } finally {
         await client.close();
     }
