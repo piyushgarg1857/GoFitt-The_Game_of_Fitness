@@ -45,6 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 total_points: u.total_points || 0,
                 total_distance: u.total_distance || 0,
                 active_streak: u.active_streak || 0,
+                activity_banned: u.activity_banned || false,
                 created_at: u.created_at,
             }));
 
