@@ -1,5 +1,5 @@
 import { FC, useState, useEffect, ReactNode } from 'react';
-import { Settings, LogOut, Edit2, Star, Heart, Mountain, Zap, Flame, Map as MapIcon, History, Award, Users, Footprints, Shield, Target } from 'lucide-react';
+import { Settings, LogOut, Edit2, Star, Heart, Mountain, Zap, Flame, Map as MapIcon, History, Award, Users, Footprints, Shield, ChevronRight } from 'lucide-react';
 import * as api from '../lib/api';
 import { SoundManager } from '../lib/sound';
 import { SettingsModal } from './SettingsModal';
@@ -7,17 +7,17 @@ import { UserSearchModal } from './UserSearchModal';
 import { useToast } from './Toast';
 
 const AttributeCard: FC<{ label: string; value: number; icon: ReactNode; color: string; sub: string }> = ({ label, value, icon, color, sub }) => (
-    <div className="bg-white/80 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 p-4 rounded-2xl relative overflow-hidden group hover:border-gray-300 dark:hover:border-gray-700 transition-all duration-300 shadow-sm dark:shadow-none">
-        <div className="flex justify-between items-start mb-3">
-            <div className={`p-2 rounded-lg bg-gray-100 dark:bg-gray-800 ${color.replace('bg-', 'text-').replace('500', '400')}`}>
+    <div className="bg-white dark:bg-gray-800/90 backdrop-blur-md border border-gray-100 dark:border-gray-700/50 p-5 rounded-2xl relative group hover:border-gray-200 dark:hover:border-gray-600 transition-all duration-300 shadow-sm">
+        <div className="flex justify-between items-start mb-4">
+            <div className={`p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 ring-1 ring-black/5 dark:ring-white/10`}>
                 {icon}
             </div>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">{Math.round(value)}</span>
+            <span className="text-3xl font-semibold text-gray-900 dark:text-white tracking-tight">{Math.round(value)}</span>
         </div>
-        <h4 className="text-gray-600 dark:text-gray-400 font-medium text-sm">{label}</h4>
-        <p className="text-xs text-gray-500 dark:text-gray-600 mb-3">{sub}</p>
-        <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-            <div className={`h-full ${color} rounded-full transition-all duration-1000 group-hover:brightness-125`} style={{ width: `${Math.min(100, value)}%` }} />
+        <h4 className="text-gray-900 dark:text-gray-100 font-medium">{label}</h4>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{sub}</p>
+        <div className="w-full h-1 bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden">
+            <div className={`h-full ${color} rounded-full transition-all duration-1000 ease-out`} style={{ width: `${Math.min(100, value)}%` }} />
         </div>
     </div>
 );
@@ -78,10 +78,10 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ userStats, runHistory, currentU
         setAvatarUrl(url);
         const res = await api.updateProfile({ avatar_url: url });
         if (res.success) {
-            addToast('Avatar updated! 🎨', 'success');
+            addToast('Profile updated', 'success');
             onRefresh();
         } else {
-            addToast('Failed to update avatar', 'error');
+            addToast('Failed to update profile', 'error');
         }
         setIsEditingAvatar(false);
     };
@@ -91,185 +91,187 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ userStats, runHistory, currentU
         if (res.success) {
             SoundManager.playSuccess();
             setPendingRequests(prev => prev.filter(r => r.id !== reqId));
-            addToast('Ally added! 🤝', 'success');
+            addToast('Request accepted', 'success');
         } else {
             addToast('Failed to accept request', 'error');
         }
     };
 
-    // Calculate RPG Stats
+    // Calculate Stats
     const endurance = Math.min(100, (userStats?.totalDistance || 0) * 2);
     const speed = runHistory.length > 0 ? Math.min(100, 1000 / (runHistory.reduce((acc, r) => acc + (r.duration / r.distance), 0) / runHistory.length)) : 0;
     const willpower = Math.min(100, (userStats?.activeStreak || 0) * 10);
     const explorer = Math.min(100, (userStats?.territories || 0) * 5);
 
     if (!userStats) return (
-        <div className="p-10 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center animate-pulse">
-                <Users className="w-8 h-8 text-cyan-400" />
-            </div>
-            <p className="text-gray-500 dark:text-gray-400 font-medium">Loading profile...</p>
+        <div className="flex flex-col items-center justify-center p-20 min-h-[50vh]">
+            <div className="w-12 h-12 rounded-full border-2 border-gray-200 border-t-cyan-500 animate-spin mb-4" />
+            <p className="text-gray-500 dark:text-gray-400 font-medium">Loading profile data</p>
         </div>
     );
 
     return (
-        <div className="p-4 md:p-6 space-y-8 pb-24">
-            {/* Hero Section */}
-            <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-2xl">
-                {/* Background Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5" />
-                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-cyan-500/10 dark:from-cyan-500/20 to-transparent" />
+        <div className="relative max-w-6xl mx-auto p-4 md:p-8 space-y-8 pb-32">
+            {/* Header / Hero */}
+            <header className="bg-white dark:bg-gray-800/90 rounded-3xl p-6 md:p-8 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-6 flex gap-3 h-full items-start">
+                    <button onClick={() => setIsSettingsOpen(true)} className="p-2.5 text-gray-400 hover:text-gray-900 dark:hover:text-white bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl transition-all">
+                        <Settings className="w-5 h-5" />
+                    </button>
+                    <button onClick={handleLogout} className="p-2.5 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all">
+                        <LogOut className="w-5 h-5" />
+                    </button>
+                </div>
 
-                <div className="relative z-10 p-8 flex flex-col md:flex-row items-center gap-8">
-                    {/* Avatar & Level Ring */}
-                    <div className="relative group">
-                        <div className="absolute inset-0 bg-cyan-500 rounded-full blur-xl opacity-30 dark:opacity-50 group-hover:opacity-60 dark:group-hover:opacity-80 transition-opacity" />
-                        <div className="relative w-32 h-32 rounded-full p-1 bg-gradient-to-tr from-cyan-400 to-lime-400 cursor-pointer" onClick={() => setIsEditingAvatar(!isEditingAvatar)}>
-                            <div className="w-full h-full rounded-full overflow-hidden border-4 border-white dark:border-gray-900 bg-gray-200 dark:bg-gray-800">
-                                <img src={avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Agent'} alt="Profile" className="w-full h-full object-cover" />
-                            </div>
-                            <div className="absolute bottom-0 right-0 bg-white dark:bg-gray-900 rounded-full p-1.5 border border-gray-200 dark:border-gray-700 shadow-lg">
-                                <Edit2 className="w-4 h-4 text-gray-900 dark:text-white" />
-                            </div>
-                        </div>
-                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-900 border border-cyan-500/30 dark:border-cyan-500/50 px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500 dark:text-yellow-400 fill-yellow-500 dark:fill-yellow-400" />
-                            <span className="text-xs font-bold text-gray-900 dark:text-white">Lvl {userStats.level}</span>
-                        </div>
+                {/* Avatar Section */}
+                <div className="relative flex-shrink-0 group cursor-pointer" onClick={() => setIsEditingAvatar(!isEditingAvatar)}>
+                    <div className="w-28 h-28 rounded-full border border-gray-200 dark:border-gray-700 overflow-hidden bg-gray-50 dark:bg-gray-900 group-hover:shadow-md transition-all p-1">
+                        <img src={avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Agent'} alt="Profile" className="w-full h-full object-cover rounded-full" />
                     </div>
-
-                    {/* User Info */}
-                    <div className="text-center md:text-left flex-1">
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{currentUser?.username || 'Hunter'}</h1>
-                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-4">
-                            <span className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-lg text-cyan-600 dark:text-cyan-400 text-xs font-bold uppercase tracking-wider">
-                                Rank #{userStats.rank}
-                            </span>
-                            <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-lg text-purple-600 dark:text-purple-400 text-xs font-bold uppercase tracking-wider">
-                                {userStats.level > 10 ? 'Elite Runner' : 'Rookie Runner'}
-                            </span>
-                        </div>
-
-                        {/* HP & XP Progress */}
-                        <div className="max-w-md w-full space-y-3">
-                            <div>
-                                <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span className="flex items-center gap-1"><Heart className="w-3 h-3 text-red-500 fill-red-500" /> Health (HP)</span>
-                                    <span className="font-bold text-red-500">{userStats.hp} / {userStats.maxHp}</span>
-                                </div>
-                                <div className="h-2.5 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700">
-                                    <div className="h-full bg-gradient-to-r from-red-500 to-rose-600 shadow-[0_0_10px_rgba(244,63,94,0.4)] transition-all duration-500" style={{ width: `${(userStats.hp / userStats.maxHp) * 100}%` }} />
-                                </div>
-                            </div>
-
-                            <div>
-                                <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>XP Progress</span>
-                                    <span>{userStats.xp} / {userStats.xpToNextLevel}</span>
-                                </div>
-                                <div className="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-                                    <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500" style={{ width: `${(userStats.xp / userStats.xpToNextLevel) * 100}%` }} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex gap-3">
-                        <button onClick={() => setIsSettingsOpen(true)} className="p-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-700 transition-colors shadow-sm dark:shadow-none">
-                            <Settings className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                        </button>
-                        <button onClick={handleLogout} className="p-3 bg-red-500/10 hover:bg-red-500/20 rounded-xl border border-red-500/20 transition-colors flex items-center gap-2">
-                            <LogOut className="w-6 h-6 text-red-600 dark:text-red-500" />
-                            <span className="text-sm font-bold text-red-600 dark:text-red-500 hidden md:inline">Logout</span>
-                        </button>
+                    <div className="absolute bottom-0 right-0 bg-white dark:bg-gray-800 p-2 rounded-full shadow border border-gray-100 dark:border-gray-700 text-gray-500 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                        <Edit2 className="w-4 h-4" />
                     </div>
                 </div>
 
-                {/* Avatar Selector Drawer */}
-                {isEditingAvatar && (
-                    <div className="bg-gray-50 dark:bg-gray-900/90 border-t border-gray-200 dark:border-gray-800 p-4">
-                        <p className="text-xs text-gray-500 text-center mb-3 font-medium">Choose your avatar</p>
-                        <div className="flex justify-center gap-3 overflow-x-auto pb-2">
-                            {avatars.map((url, i) => (
-                                <button key={i} onClick={() => {
-                                    SoundManager.playClick();
-                                    handleAvatarSelect(url);
-                                }} className={`relative shrink-0 w-14 h-14 rounded-full border-2 overflow-hidden transition-all hover:scale-110 ${avatarUrl === url ? 'border-cyan-400 ring-2 ring-cyan-400/30' : 'border-transparent hover:border-cyan-400/50'}`}>
-                                    <img src={url} className="w-full h-full" alt={`Avatar ${i}`} />
-                                </button>
-                            ))}
+                {/* Info Section */}
+                <div className="flex-1 text-center md:text-left">
+                    <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 mb-2">
+                        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                            {currentUser?.username || 'Hunter'}
+                        </h1>
+                        <div className="flex items-center justify-center md:justify-start gap-2">
+                            <span className="px-3 py-1 bg-cyan-50 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 rounded-full text-xs font-semibold tracking-wide border border-cyan-100 dark:border-cyan-500/20">
+                                Rank #{userStats.rank}
+                            </span>
+                            <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full text-xs font-semibold tracking-wide flex items-center gap-1.5 border border-gray-200 dark:border-gray-700">
+                                <Star className="w-3.5 h-3.5 text-gray-400" />
+                                Lvl {userStats.level}
+                            </span>
                         </div>
                     </div>
-                )}
+                    <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto md:mx-0">
+                        {userStats.level > 10 ? 'Advanced athlete member' : 'Member in training'}
+                    </p>
+
+                    <div className="space-y-4 max-w-sm mx-auto md:mx-0">
+                        <div>
+                            <div className="flex justify-between text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                                <span>Health Status</span>
+                                <span className="text-gray-900 dark:text-gray-200">{userStats.hp} / {userStats.maxHp} HP</span>
+                            </div>
+                            <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(userStats.hp / userStats.maxHp) * 100}%` }} />
+                            </div>
+                        </div>
+                        <div>
+                            <div className="flex justify-between text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                                <span>Experience</span>
+                                <span className="text-gray-900 dark:text-gray-200">{userStats.xp} / {userStats.xpToNextLevel} XP</span>
+                            </div>
+                            <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                <div className="h-full bg-cyan-500 rounded-full" style={{ width: `${(userStats.xp / userStats.xpToNextLevel) * 100}%` }} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {/* Avatar Selector Inline Drawer */}
+            {isEditingAvatar && (
+                <div className="bg-white dark:bg-gray-800/90 rounded-2xl p-6 border border-gray-100 dark:border-gray-700/50 shadow-sm animate-in fade-in slide-in-from-top-4 duration-200">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="font-semibold text-gray-900 dark:text-white">Choose Avatar</h3>
+                        <button onClick={() => setIsEditingAvatar(false)} className="text-sm font-medium text-gray-500 hover:text-gray-900">Cancel</button>
+                    </div>
+                    <div className="flex gap-4 overflow-x-auto pb-4 px-1 snap-x">
+                        {avatars.map((url, i) => (
+                            <button
+                                key={i}
+                                onClick={() => {
+                                    SoundManager.playClick();
+                                    handleAvatarSelect(url);
+                                }}
+                                className={`shrink-0 snap-center w-16 h-16 rounded-full border-2 overflow-hidden transition-all duration-200 hover:scale-105 ${avatarUrl === url ? 'border-cyan-500 shadow-md shadow-cyan-500/20' : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600 ring-1 ring-black/5 dark:ring-white/10'}`}
+                            >
+                                <img src={url} className="w-full h-full bg-gray-50 dark:bg-gray-900" alt={`Avatar option ${i}`} />
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Core Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <AttributeCard label="Endurance" value={endurance} icon={<Mountain className="w-5 h-5" />} color="bg-cyan-500" sub="Aggregate Distance" />
+                <AttributeCard label="Speed" value={speed} icon={<Zap className="w-5 h-5" />} color="bg-indigo-500" sub="Average Pace" />
+                <AttributeCard label="Consistency" value={willpower} icon={<Flame className="w-5 h-5" />} color="bg-orange-500" sub="Active Streak" />
+                <AttributeCard label="Exploration" value={explorer} icon={<MapIcon className="w-5 h-5" />} color="bg-purple-500" sub="Territories Mapped" />
             </div>
 
-            {/* RPG Attributes Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <AttributeCard label="Endurance" value={endurance} icon={<Mountain className="w-5 h-5 text-emerald-400" />} color="bg-emerald-500" sub="Total Distance" />
-                <AttributeCard label="Speed" value={speed} icon={<Zap className="w-5 h-5 text-yellow-400" />} color="bg-yellow-500" sub="Avg Pace" />
-                <AttributeCard label="Willpower" value={willpower} icon={<Flame className="w-5 h-5 text-orange-400" />} color="bg-orange-500" sub="Streak" />
-                <AttributeCard label="Exploration" value={explorer} icon={<MapIcon className="w-5 h-5 text-purple-400" />} color="bg-purple-500" sub="Territories" />
-            </div>
+            <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
+                {/* Recent Activity */}
+                <div className="lg:col-span-2 space-y-5">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Activity History</h3>
+                        <button className="text-sm font-medium text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 flex items-center gap-1 group">
+                            View all <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                        </button>
+                    </div>
 
-            <div className="grid lg:grid-cols-3 gap-6">
-                {/* Recent Runs */}
-                <div className="lg:col-span-2 space-y-4">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <History className="w-5 h-5 text-cyan-500 dark:text-cyan-400" /> Mission History
-                    </h3>
-                    <div className="space-y-3">
+                    <div className="bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/50 rounded-2xl overflow-hidden shadow-sm">
                         {runHistory.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500 dark:text-gray-500 bg-gray-50 dark:bg-gray-800/30 rounded-2xl border border-gray-200 dark:border-gray-700 border-dashed">
-                                <Footprints className="w-10 h-10 mx-auto mb-3 text-gray-300 dark:text-gray-700" />
-                                No missions completed yet. Start running!
+                            <div className="p-10 text-center text-gray-500">
+                                <Footprints className="w-10 h-10 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                                <p className="font-medium">No activity recorded yet.</p>
+                                <p className="text-sm mt-1">Your logged runs will appear here.</p>
                             </div>
                         ) : (
-                            runHistory.slice(0, 5).map(run => (
-                                <div key={run.id} className="group flex items-center justify-between p-4 bg-white/80 dark:bg-gray-800/40 hover:bg-gray-50 dark:hover:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700/50 hover:border-cyan-500/30 transition-all shadow-sm dark:shadow-none">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center group-hover:bg-cyan-500/10 dark:group-hover:bg-cyan-500/20 transition-colors">
-                                            <Footprints className="w-6 h-6 text-gray-400 group-hover:text-cyan-500" />
+                            <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                                {runHistory.slice(0, 5).map(run => (
+                                    <div key={run.id} className="flex items-center justify-between p-5 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-full bg-cyan-50 dark:bg-cyan-500/10 flex items-center justify-center text-cyan-600 dark:text-cyan-400 shrink-0">
+                                                <History className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-semibold text-gray-900 dark:text-white">{run.distance} km Run</h4>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 md:text-sm">{run.date}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h4 className="font-bold text-gray-900 dark:text-white">{run.distance} km Run</h4>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">{run.date}</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="flex items-center gap-2 justify-end">
-                                            <span className="text-sm font-bold text-gray-900 dark:text-white">{run.duration}m</span>
-                                            <span className="text-xs text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">
-                                                {run.pace} /km
-                                            </span>
+                                        <div className="text-right">
+                                            <div className="font-semibold text-gray-900 dark:text-white">{run.duration}m</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-400">{run.pace} /km</div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
+                                ))}
+                            </div>
                         )}
                     </div>
                 </div>
 
-                {/* Badges / Collection */}
-                <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <Award className="w-5 h-5 text-yellow-500 dark:text-yellow-400" /> Collection
-                    </h3>
-                    <div className="grid grid-cols-3 gap-3">
-                        {achievements.map((achievement) => (
-                            <div key={achievement.id} className={`aspect-square rounded-xl flex flex-col items-center justify-center p-2 text-center border transition-all duration-300 ${achievement.unlocked
-                                    ? 'bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-cyan-500/20 dark:border-cyan-500/30 shadow-sm dark:shadow-[0_0_15px_rgba(6,182,212,0.1)] hover:scale-105'
-                                    : 'bg-gray-100 dark:bg-gray-900/50 border-gray-200 dark:border-gray-800 opacity-50 grayscale'
-                                }`}>
-                                <div className={`mb-2 ${achievement.unlocked ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-400 dark:text-gray-600'}`}>
-                                    {achievement.icon === 'footprints' && <Footprints className="w-8 h-8" />}
-                                    {achievement.icon === 'shield' && <Shield className="w-8 h-8" />}
-                                    {achievement.icon === 'trophy' && <Award className="w-8 h-8" />}
-                                    {achievement.icon === 'flame' && <Flame className="w-8 h-8" />}
-                                    {achievement.icon === 'map' && <MapIcon className="w-8 h-8" />}
-                                    {achievement.icon === 'zap' && <Zap className="w-8 h-8" />}
+                {/* Achievements Collection */}
+                <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Milestones</h3>
+                    </div>
+                    <div className="bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/50 rounded-2xl p-5 shadow-sm">
+                        <div className="grid grid-cols-3 gap-3 md:gap-4">
+                            {achievements.map((achievement) => (
+                                <div key={achievement.id} className={`aspect-square rounded-xl flex flex-col items-center justify-center transition-all ${achievement.unlocked
+                                    ? 'bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700/80 shadow-sm'
+                                    : 'bg-transparent border border-dashed border-gray-200 dark:border-gray-800 opacity-40'
+                                    }`}>
+                                    <div className={`${achievement.unlocked ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400'}`}>
+                                        {achievement.icon === 'footprints' && <Footprints className="w-6 h-6 md:w-7 md:h-7" />}
+                                        {achievement.icon === 'shield' && <Shield className="w-6 h-6 md:w-7 md:h-7" />}
+                                        {achievement.icon === 'trophy' && <Award className="w-6 h-6 md:w-7 md:h-7" />}
+                                        {achievement.icon === 'flame' && <Flame className="w-6 h-6 md:w-7 md:h-7" />}
+                                        {achievement.icon === 'map' && <MapIcon className="w-6 h-6 md:w-7 md:h-7" />}
+                                        {achievement.icon === 'zap' && <Zap className="w-6 h-6 md:w-7 md:h-7" />}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -277,31 +279,35 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ userStats, runHistory, currentU
             <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
             <UserSearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
-            {/* My Allies Section */}
-            <div className="bg-white/80 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 p-6 rounded-3xl relative overflow-hidden">
-                <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <Users className="w-5 h-5 text-indigo-500" /> My Allies
-                    </h3>
-                    <button onClick={() => setIsSearchOpen(true)} className="text-xs font-bold text-cyan-500 hover:text-cyan-400 uppercase tracking-wider transition-colors">Find Hunters</button>
+            {/* Allies Request Section */}
+            <div className="bg-white dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700/50 p-6 md:p-8 rounded-3xl shadow-sm">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Network & Allies</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Connect with other athletes</p>
+                    </div>
+                    <button onClick={() => setIsSearchOpen(true)} className="px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium rounded-xl text-sm transition-all hover:bg-gray-800 dark:hover:bg-gray-100 flex items-center gap-2">
+                        <Users className="w-4 h-4" /> Expand Network
+                    </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {/* Pending Requests */}
                     {pendingRequests.map(req => (
-                        <div key={req.id} className="flex items-center justify-between p-4 rounded-2xl bg-orange-500/10 border border-orange-500/20">
+                        <div key={req.id} className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-gray-200 dark:border-gray-700/50 dark:hover:border-gray-600 transition-colors bg-gray-50 dark:bg-gray-800/50">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gray-700 overflow-hidden">
-                                    <img src={req.sender?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${req.sender?.username}`} alt="Sender" />
-                                </div>
+                                <img
+                                    src={req.sender?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${req.sender?.username}`}
+                                    className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
+                                    alt="Sender"
+                                />
                                 <div>
-                                    <h4 className="font-bold text-gray-900 dark:text-white text-sm">{req.sender?.username}</h4>
-                                    <p className="text-xs text-orange-500 font-bold">Wants to ally</p>
+                                    <h4 className="font-semibold text-gray-900 dark:text-white text-sm">{req.sender?.username}</h4>
+                                    <p className="text-xs text-gray-500">Connection pending</p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => handleAcceptRequest(req.id)}
-                                className="px-3 py-1 bg-orange-500 text-white text-xs font-bold rounded-lg hover:bg-orange-600 transition-colors"
+                                className="px-3 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold rounded-lg transition-colors hover:bg-gray-800 dark:hover:bg-gray-100"
                             >
                                 Accept
                             </button>
@@ -309,8 +315,8 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ userStats, runHistory, currentU
                     ))}
 
                     {pendingRequests.length === 0 && (
-                        <div className="col-span-full text-center py-6 text-gray-500 text-sm">
-                            No pending requests. Use "Find Hunters" to connect with players!
+                        <div className="col-span-full py-8 text-center border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-2xl">
+                            <div className="text-gray-500 dark:text-gray-400 text-sm">No new connection requests.</div>
                         </div>
                     )}
                 </div>
