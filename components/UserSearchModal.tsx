@@ -33,7 +33,7 @@ export const UserSearchModal: FC<{ isOpen: boolean; onClose: () => void }> = ({ 
         if (res.success) {
             SoundManager.playSuccess();
             setSentRequests(prev => new Set(Array.from(prev).concat(userId)));
-            addToast(`Friend request sent to ${username}! 🤝`, 'success');
+            addToast(`Friend request sent to ${username}!`, 'success');
         } else {
             addToast(res.error || 'Failed to send request', 'error');
         }
@@ -44,7 +44,7 @@ export const UserSearchModal: FC<{ isOpen: boolean; onClose: () => void }> = ({ 
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl animate-slideUp">
                 <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <Search className="w-5 h-5 text-cyan-500" /> Find Hunters
+                        <Search className="w-5 h-5 text-gray-500" /> Find Users
                     </h2>
                     <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                         <X className="w-5 h-5" />
@@ -67,8 +67,8 @@ export const UserSearchModal: FC<{ isOpen: boolean; onClose: () => void }> = ({ 
                     <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-hide">
                         {loading ? (
                             <div className="text-center py-8 text-gray-500 flex flex-col items-center gap-2">
-                                <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
-                                <span>Scanning network...</span>
+                                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                                <span>Searching...</span>
                             </div>
                         ) : results.length > 0 ? (
                             results.map(user => (
@@ -95,7 +95,7 @@ export const UserSearchModal: FC<{ isOpen: boolean; onClose: () => void }> = ({ 
                                 </div>
                             ))
                         ) : query.length >= 2 ? (
-                            <div className="text-center py-8 text-gray-500">No hunters found with that signal.</div>
+                            <div className="text-center py-8 text-gray-500">No users found.</div>
                         ) : (
                             <div className="text-center py-8 text-gray-500 text-sm">Enter at least 2 characters to search.</div>
                         )}

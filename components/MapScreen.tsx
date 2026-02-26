@@ -265,7 +265,7 @@ const MapScreen: FC<MapScreenProps> = ({ currentUser }) => {
                     api.saveRun(distance, duration, currentPath).then(res => {
                         if (res.success) {
                             SoundManager.playSuccess();
-                            addToast(`Run saved! ${distance.toFixed(2)} km in ${(duration / 60).toFixed(1)} min 🏃`, 'success');
+                            addToast(`Run saved! ${distance.toFixed(2)} km in ${(duration / 60).toFixed(1)} min`, 'success');
                         } else {
                             addToast(res.error || 'Failed to save run', 'error');
                         }
@@ -354,7 +354,7 @@ const MapScreen: FC<MapScreenProps> = ({ currentUser }) => {
                 source: 'territory-labels',
                 minzoom: 10,
                 layout: {
-                    'text-field': ['concat', '🏴 ', ['get', 'username']],
+                    'text-field': ['get', 'username'],
                     'text-size': [
                         'interpolate', ['linear'], ['zoom'],
                         10, 9, 14, 12, 17, 14,
@@ -395,7 +395,7 @@ const MapScreen: FC<MapScreenProps> = ({ currentUser }) => {
                 const html = `
                     <div style="background:#0f172a;border:1.5px solid ${color};border-radius:14px;padding:14px 16px;min-width:180px;font-family:Inter,sans-serif;box-shadow:0 0 20px ${color}55;">
                         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                            <div style="width:32px;height:32px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🏴</div>
+                            <div style="width:32px;height:32px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:12px;flex-shrink:0;">M</div>
                             <div>
                                 <p style="margin:0;font-weight:700;font-size:15px;color:#fff;">
                                     ${props.username || 'Unknown'}
@@ -453,9 +453,9 @@ const MapScreen: FC<MapScreenProps> = ({ currentUser }) => {
                 source: 'user-location',
                 paint: {
                     'circle-radius': 20,
-                    'circle-color': '#4096ff',
+                    'circle-color': '#111827',
                     'circle-opacity': 0.15,
-                    'circle-stroke-color': '#4096ff',
+                    'circle-stroke-color': '#111827',
                     'circle-stroke-width': 1.5,
                     'circle-stroke-opacity': 0.5,
                 },
@@ -468,7 +468,7 @@ const MapScreen: FC<MapScreenProps> = ({ currentUser }) => {
                 source: 'user-location',
                 paint: {
                     'circle-radius': 7,
-                    'circle-color': '#4096ff',
+                    'circle-color': '#111827',
                     'circle-stroke-color': '#ffffff',
                     'circle-stroke-width': 2.5,
                     'circle-opacity': 1,
@@ -540,7 +540,7 @@ const MapScreen: FC<MapScreenProps> = ({ currentUser }) => {
             if (res.success) {
                 setIsRunning(false);
                 SoundManager.playSuccess();
-                addToast(`Territory Claimed! Area: ${Math.round(area)} sq meters 🏴`, 'success');
+                addToast(`Territory Claimed! Area: ${Math.round(area)} sq meters`, 'success');
                 fetchAndDrawTerritories();
             } else if (res.error === 'Not authenticated') {
                 addToast('You must be logged in to claim territory!', 'warning');
@@ -624,8 +624,8 @@ const MapScreen: FC<MapScreenProps> = ({ currentUser }) => {
                     <button
                         onClick={() => setMapStyle('mapbox://styles/mapbox/satellite-streets-v12')}
                         className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 ${mapStyle.includes('satellite')
-                            ? 'bg-cyan-500 text-gray-900 shadow-md'
-                            : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                            ? 'bg-gray-900 text-white shadow-sm'
+                            : 'text-gray-500 hover:text-gray-900'
                             }`}
                     >
                         <Satellite className="w-3 h-3" /> Satellite
@@ -633,8 +633,8 @@ const MapScreen: FC<MapScreenProps> = ({ currentUser }) => {
                     <button
                         onClick={() => setMapStyle('mapbox://styles/mapbox/outdoors-v12')}
                         className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 ${mapStyle.includes('outdoors')
-                            ? 'bg-lime-500 text-gray-900 shadow-md'
-                            : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                            ? 'bg-gray-900 text-white shadow-sm'
+                            : 'text-gray-500 hover:text-gray-900'
                             }`}
                     >
                         <Mountain className="w-3 h-3" /> Terrain
@@ -642,8 +642,8 @@ const MapScreen: FC<MapScreenProps> = ({ currentUser }) => {
                     <button
                         onClick={() => setMapStyle('mapbox://styles/mapbox/dark-v11')}
                         className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 ${mapStyle.includes('dark')
-                            ? 'bg-purple-500 text-white shadow-md'
-                            : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                            ? 'bg-gray-900 text-white shadow-sm'
+                            : 'text-gray-500 hover:text-gray-900'
                             }`}
                     >
                         Dark
@@ -662,8 +662,8 @@ const MapScreen: FC<MapScreenProps> = ({ currentUser }) => {
                         setIsRunning(!isRunning);
                     }}
                     className={`px-10 py-4 rounded-full font-bold text-lg shadow-2xl transition-all transform hover:scale-105 active:scale-95 flex items-center gap-3 ${isRunning
-                        ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-red-500/30 animate-pulse'
-                        : 'bg-gradient-to-r from-cyan-500 to-lime-500 text-gray-900 shadow-cyan-500/30 hover:shadow-cyan-500/50'
+                        ? 'bg-gray-900 text-white shadow-sm'
+                        : 'bg-white text-gray-900 shadow-sm border border-gray-100 hover:bg-gray-50'
                         }`}
                 >
                     {isRunning ? (
