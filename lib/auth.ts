@@ -2,7 +2,10 @@ import jwt from 'jsonwebtoken';
 import { NextApiRequest } from 'next';
 import { parse } from 'cookie';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'gofitt-super-secret-key-change-in-production-2026';
+if (!process.env.JWT_SECRET) {
+    throw new Error('Please add JWT_SECRET to .env.local');
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export interface JWTPayload {
     userId: string;
