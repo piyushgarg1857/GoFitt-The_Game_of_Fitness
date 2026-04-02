@@ -1,5 +1,7 @@
 # GoFitt - The Game of Fitness
 
+🌐 **Live Demo:** [https://gofitt.vercel.app](https://gofitt.vercel.app)
+
 GoFitt is an interactive, gamified fitness application that turns your physical activities into an engaging game. Built with cutting-edge web technologies, it features real-time maps, fitness statistics, and user interactions to motivate you on your fitness journey.
 
 ## 🚀 Features
