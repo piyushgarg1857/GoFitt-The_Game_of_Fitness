@@ -2,10 +2,31 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '../../../lib/mongodb';
 import { signToken } from '../../../lib/auth';
 import bcrypt from 'bcryptjs';
+import { serialize } from 'cookie';
+
+const rateLimitMap = new Map<string, number[]>();
+
+function checkRateLimit(ip: string): boolean {
+    const record = rateLimitMap.get(ip) || [0, Date.now()];
+    const now = Date.now();
+    // Reset if older than 1 minute
+    if (now - record[1] > 60000) {
+        rateLimitMap.set(ip, [1, now]);
+        return true;
+    }
+    record[0] += 1;
+    rateLimitMap.set(ip, record);
+    return record[0] <= 5; // Max 5 requests per minute
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    if (!checkRateLimit(ip as string)) {
+        return res.status(429).json({ error: 'Too many requests, please try again later' });
     }
 
     try {
@@ -29,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         // Hash password
-        const hashedPassword = await bcrypt.hash(password, 12);
+        const hashedPassword = await bcrypt.hash(password, 14);
 
         // Create user document
         const now = new Date();
@@ -51,6 +72,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             email,
             username,
         });
+
+        res.setHeader('Set-Cookie', serialize('gofitt_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 30 * 24 * 60 * 60, // 30 days
+            path: '/',
+        }));
 
         return res.status(201).json({
             success: true,

@@ -6,6 +6,7 @@ interface SEOProps {
   keywords?: string;
   ogImage?: string;
   url?: string;
+  noindex?: boolean;
 }
 
 export default function SEO({
@@ -14,6 +15,7 @@ export default function SEO({
   keywords = 'fitness, tracking, workout, health, community, leaderboard, sports',
   ogImage = '/logo.png', // Fallback to logo if no specific OG image is provided
   url = 'https://gofitt.vercel.app',
+  noindex = false,
 }: SEOProps) {
   const pageTitle = title.includes('GoFit') ? title : `${title} | GoFit`;
 
@@ -24,8 +26,9 @@ export default function SEO({
       <meta name="title" content={pageTitle} />
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
-      <meta name="robots" content="index, follow" />
+      <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
       <meta name="language" content="English" />
+      <link rel="canonical" href={url} />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content="website" />

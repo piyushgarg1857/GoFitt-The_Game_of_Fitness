@@ -189,6 +189,7 @@ const Admin: NextPage = () => {
             <SEO 
                 title="GoFit Admin Panel" 
                 description="GoFit Admin Dashboard for managing users and platform activity."
+                noindex={true}
             />
 
             <div className="min-h-screen bg-gray-950 text-white font-['Inter']">

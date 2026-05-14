@@ -54,17 +54,26 @@ export interface Activity {
 
 // Token management
 function getToken(): string | null {
+    // Only used as fallback or if we still have it from before
     if (typeof window === 'undefined') return null;
     return localStorage.getItem('gofitt_token');
 }
 
 function setToken(token: string) {
-    localStorage.setItem('gofitt_token', token);
+    // No-op for new logins since we use HttpOnly cookies, but keep for fallback
 }
 
-function removeToken() {
-    localStorage.removeItem('gofitt_token');
-    localStorage.removeItem('gofitt_user');
+async function removeToken() {
+    if (typeof window !== 'undefined') {
+        localStorage.removeItem('gofitt_token');
+        localStorage.removeItem('gofitt_user');
+    }
+    // Call the logout endpoint to clear the HttpOnly cookie
+    try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (e) {
+        console.error('Logout error:', e);
+    }
 }
 
 function getCachedUser(): UserProfile | null {
@@ -151,8 +160,8 @@ export async function fetchCurrentUser(): Promise<UserProfile | null> {
     }
 }
 
-export function logout() {
-    removeToken();
+export async function logout() {
+    await removeToken();
     window.location.reload();
 }
 

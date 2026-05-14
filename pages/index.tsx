@@ -137,9 +137,9 @@ export default function LandingPage() {
                             <span className="font-bold text-gray-500">GoFit © 2026</span>
                         </div>
                         <div className="flex gap-6 text-sm text-gray-500">
-                            <a href="#" className="hover:text-gray-900 transition-colors">Privacy</a>
-                            <a href="#" className="hover:text-gray-900 transition-colors">Terms</a>
-                            <a href="#" className="hover:text-gray-900 transition-colors">Support</a>
+                            <Link href="/privacy" className="hover:text-gray-900 transition-colors">Privacy</Link>
+                            <Link href="/terms" className="hover:text-gray-900 transition-colors">Terms</Link>
+                            <Link href="/support" className="hover:text-gray-900 transition-colors">Support</Link>
                         </div>
                     </div>
                 </footer>
