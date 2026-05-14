@@ -56,13 +56,13 @@ export default function LandingPage() {
 
                             <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 text-gray-500">
                                 <div className="flex flex-col">
-                                    <span className="text-2xl font-bold text-gray-900">50K+</span>
-                                    <span className="text-xs uppercase tracking-wide">Active Members</span>
+                                    <span className="text-2xl font-bold text-gray-900">Free</span>
+                                    <span className="text-xs uppercase tracking-wide">No Credit Card</span>
                                 </div>
                                 <div className="w-px h-10 bg-gray-200"></div>
                                 <div className="flex flex-col">
-                                    <span className="text-2xl font-bold text-gray-900">1M+</span>
-                                    <span className="text-xs uppercase tracking-wide">Activities Logged</span>
+                                    <span className="text-2xl font-bold text-gray-900">Real-time</span>
+                                    <span className="text-xs uppercase tracking-wide">Activity Tracking</span>
                                 </div>
                             </div>
                         </div>

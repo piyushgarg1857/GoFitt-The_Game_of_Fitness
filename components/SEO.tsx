@@ -44,6 +44,7 @@ export default function SEO({
       <meta property="twitter:title" content={pageTitle} />
       <meta property="twitter:description" content={description} />
       <meta property="twitter:image" content={ogImage} />
+      <meta name="twitter:site" content="@gofittapp" />
 
       {/* JSON-LD Structured Data */}
       <script

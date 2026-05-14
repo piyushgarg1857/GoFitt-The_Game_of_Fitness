@@ -4,7 +4,7 @@ const MONGODB_URI = process.env.MONGODB_URI || '';
 const MONGODB_DB = process.env.MONGODB_DB || 'gofitt';
 
 if (!MONGODB_URI) {
-  console.error('MONGODB_URI is missing from environment variables');
+  if (process.env.NODE_ENV !== 'production') console.error('MONGODB_URI is missing from environment variables');
 }
 
 interface MongoConnection {
@@ -38,10 +38,10 @@ async function connectToDatabase(): Promise<MongoConnection> {
     db.collection('activities').createIndex({ user_id: 1, created_at: -1 }, { background: true }).catch(console.error);
     db.collection('friend_requests').createIndex({ sender_id: 1, receiver_id: 1 }, { unique: true, background: true }).catch(console.error);
 
-    console.log('Successfully connected to MongoDB');
+    if (process.env.NODE_ENV !== 'production') console.log('Successfully connected to MongoDB');
     return { client, db };
-  } catch (error: any) {
-    console.error('Failed to connect to MongoDB:', error.message);
+  } catch (error: unknown) {
+    if (process.env.NODE_ENV !== 'production') console.error('Failed to connect to MongoDB:', (error as Error).message);
     throw error;
   }
 }

@@ -1,0 +1,21 @@
+{
+  "name": "GoFit",
+  "short_name": "GoFit",
+  "description": "Track your athletic progress, connect with peers, and reach milestones.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

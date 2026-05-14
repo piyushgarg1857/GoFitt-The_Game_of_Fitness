@@ -52,37 +52,19 @@ export interface Activity {
     created_at: string;
 }
 
-// Token management
-function getToken(): string | null {
-    // We use HttpOnly cookies, so we don't have direct access to the token in JS.
-    // Return a dummy value if we have a cached user to allow API requests to proceed.
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('gofitt_token') || (localStorage.getItem('gofitt_user') ? 'httponly-cookie-active' : null);
-}
-
-function setToken(token: string) {
-    if (typeof window !== 'undefined' && token) {
-        // We can still store it for fallback, but it's not strictly necessary.
-        localStorage.setItem('gofitt_token', token);
-    }
-}
-
-async function removeToken() {
-    if (typeof window !== 'undefined') {
-        localStorage.removeItem('gofitt_token');
-        localStorage.removeItem('gofitt_user');
-    }
-    // Call the logout endpoint to clear the HttpOnly cookie
-    try {
-        await fetch('/api/auth/logout', { method: 'POST' });
-    } catch (e) {
-        console.error('Logout error:', e);
-    }
+// Token management — JWT lives in HttpOnly cookie (server-managed).
+// We only cache the user profile in sessionStorage for fast reads.
+function removeToken() {
+    if (typeof window === 'undefined') return;
+    sessionStorage.removeItem('gofitt_user');
+    // Also clear any legacy localStorage data
+    localStorage.removeItem('gofitt_token');
+    localStorage.removeItem('gofitt_user');
 }
 
 function getCachedUser(): UserProfile | null {
     if (typeof window === 'undefined') return null;
-    const raw = localStorage.getItem('gofitt_user');
+    const raw = sessionStorage.getItem('gofitt_user') || localStorage.getItem('gofitt_user');
     if (raw) {
         try { return JSON.parse(raw); } catch { return null; }
     }
@@ -90,30 +72,27 @@ function getCachedUser(): UserProfile | null {
 }
 
 function setCachedUser(user: UserProfile) {
-    localStorage.setItem('gofitt_user', JSON.stringify(user));
+    if (typeof window === 'undefined') return;
+    sessionStorage.setItem('gofitt_user', JSON.stringify(user));
 }
 
-// API request helper
-async function apiRequest(path: string, options: RequestInit = {}): Promise<any> {
-    const token = getToken();
+// API request helper — relies on HttpOnly cookie sent automatically by browser
+async function apiRequest(path: string, options: RequestInit = {}): Promise<unknown> {
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         ...(options.headers as Record<string, string> || {}),
     };
 
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
     const response = await fetch(path, {
         ...options,
         headers,
+        credentials: 'include', // ensures HttpOnly cookie is sent on every request
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.error || `Request failed with status ${response.status}`);
+        throw new Error((data as { error?: string }).error || `Request failed with status ${response.status}`);
     }
 
     return data;
@@ -124,10 +103,9 @@ export async function registerUser(username: string, email: string, password: st
     const data = await apiRequest('/api/auth/register', {
         method: 'POST',
         body: JSON.stringify({ username, email, password }),
-    });
+    }) as { success: boolean; user: UserProfile };
 
     if (data.success) {
-        setToken(data.token);
         setCachedUser(data.user);
     }
 
@@ -138,10 +116,9 @@ export async function loginUser(email: string, password: string) {
     const data = await apiRequest('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
-    });
+    }) as { success: boolean; user: UserProfile };
 
     if (data.success) {
-        setToken(data.token);
         setCachedUser(data.user);
     }
 
@@ -150,10 +127,8 @@ export async function loginUser(email: string, password: string) {
 
 export async function fetchCurrentUser(): Promise<UserProfile | null> {
     try {
-        const token = getToken();
-        if (!token) return null;
-
-        const data = await apiRequest('/api/auth/me');
+        // HttpOnly cookie is sent automatically via credentials:include
+        const data = await apiRequest('/api/auth/me') as { success: boolean; user: UserProfile };
         if (data.success) {
             setCachedUser(data.user);
             return data.user;
@@ -165,13 +140,16 @@ export async function fetchCurrentUser(): Promise<UserProfile | null> {
 }
 
 export async function logout() {
-    await removeToken();
-    window.location.reload();
+    try {
+        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } catch { /* ignore */ }
+    removeToken();
+    window.location.href = '/';
 }
 
 export function isLoggedIn(): boolean {
     if (typeof window === 'undefined') return false;
-    return !!localStorage.getItem('gofitt_user') || !!localStorage.getItem('gofitt_token');
+    return !!sessionStorage.getItem('gofitt_user') || !!localStorage.getItem('gofitt_user');
 }
 
 export function getCurrentUser(): UserProfile | null {
