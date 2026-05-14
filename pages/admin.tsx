@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { NextPage } from 'next';
-import Head from 'next/head';
+import SEO from '../components/SEO';
 import Link from 'next/link';
 import {
     Users, Activity, Map as MapIcon, Footprints, Trophy, TrendingUp,
@@ -186,11 +186,10 @@ const Admin: NextPage = () => {
 
     return (
         <>
-            <Head>
-                <title>GoFit Admin Panel</title>
-                <meta name="description" content="GoFit Admin Dashboard" />
-                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;700&display=swap" rel="stylesheet" />
-            </Head>
+            <SEO 
+                title="GoFit Admin Panel" 
+                description="GoFit Admin Dashboard for managing users and platform activity."
+            />
 
             <div className="min-h-screen bg-gray-950 text-white font-['Inter']">
                 {/* Toast */}

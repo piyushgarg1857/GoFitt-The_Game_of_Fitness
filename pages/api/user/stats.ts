@@ -22,15 +22,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(404).json({ error: 'User not found' });
             }
 
-            // Count territories
-            const territoriesCount = await db.collection('territories').countDocuments({
-                user_id: payload.userId,
-            });
-
-            // Calculate rank
-            const higherRankCount = await db.collection('users').countDocuments({
-                total_points: { $gt: user.total_points || 0 },
-            });
+            // Count territories and rank concurrently
+            const [territoriesCount, higherRankCount] = await Promise.all([
+                db.collection('territories').countDocuments({ user_id: payload.userId }),
+                db.collection('users').countDocuments({ total_points: { $gt: user.total_points || 0 } })
+            ]);
 
             const totalPoints = user.total_points || 0;
             const level = Math.floor(totalPoints / 100) + 1;

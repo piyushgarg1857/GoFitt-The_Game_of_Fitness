@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import useSWR from 'swr';
 import type { NextPage } from 'next';
-import Head from 'next/head';
+import SEO from '../components/SEO';
 import { BarChart2, User, Trophy, Map as MapIcon, Loader2 } from 'lucide-react';
 import * as api from '../lib/api';
 import { SoundManager } from '../lib/sound';
@@ -30,34 +31,18 @@ const NavItem: React.FC<{ label: string; icon: React.ReactNode; isActive: boolea
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [showAuth, setShowAuth] = useState(false);
-  const [userStats, setUserStats] = useState<api.UserStats | null>(null);
-  const [leaderboardData, setLeaderboardData] = useState<api.LeaderboardEntry[]>([]);
-  const [runHistory, setRunHistory] = useState<api.Run[]>([]);
-  const [activities, setActivities] = useState<api.Activity[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<api.UserProfile | null>(null);
   const { addToast } = useToast();
 
-  const fetchData = useCallback(async () => {
+  const checkAuth = useCallback(async () => {
     try {
       const user = await api.fetchCurrentUser();
       if (user) {
         setCurrentUser(user);
         setIsLoggedIn(true);
         setShowAuth(false);
-
-        const [stats, lb, runs, acts] = await Promise.all([
-          api.getUserStats(),
-          api.getLeaderboard(),
-          api.getRuns(),
-          api.getActivities(),
-        ]);
-
-        setUserStats(stats);
-        setLeaderboardData(lb);
-        setRunHistory(runs);
-        setActivities(acts);
       } else {
         setShowAuth(true);
         setIsLoggedIn(false);
@@ -70,32 +55,43 @@ const Home: NextPage = () => {
   }, []);
 
   useEffect(() => {
-    fetchData();
-
-    const activityInterval = setInterval(async () => {
-      if (api.isLoggedIn()) {
-        const acts = await api.getActivities();
-        setActivities(acts);
-      }
-    }, 5000);
-
-    const dataInterval = setInterval(() => {
-      if (api.isLoggedIn()) {
-        fetchData();
-      }
-    }, 15000);
-
-    return () => {
-      clearInterval(activityInterval);
-      clearInterval(dataInterval);
-    };
-  }, [fetchData]);
+    checkAuth();
+  }, [checkAuth]);
 
   const handleAuthSuccess = () => {
     setIsLoggedIn(true);
     setShowAuth(false);
-    fetchData();
+    checkAuth();
   };
+
+  // SWR hooks for data fetching
+  const { data: userStats, mutate: mutateUserStats } = useSWR(
+    isLoggedIn ? 'userStats' : null,
+    api.getUserStats,
+    { refreshInterval: 15000, fallbackData: null }
+  );
+
+  const { data: leaderboardData = [] } = useSWR(
+    isLoggedIn ? 'leaderboard' : null,
+    api.getLeaderboard,
+    { refreshInterval: 15000 }
+  );
+
+  const { data: runHistory = [] } = useSWR(
+    isLoggedIn ? 'runs' : null,
+    api.getRuns,
+    { refreshInterval: 15000 }
+  );
+
+  const { data: activities = [] } = useSWR(
+    isLoggedIn ? 'activities' : null,
+    api.getActivities,
+    { refreshInterval: 5000 }
+  );
+
+  const handleRefreshProfile = useCallback(() => {
+    mutateUserStats();
+  }, [mutateUserStats]);
 
   if (isLoading) {
     return (
@@ -113,23 +109,23 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>GoFit Dashboard</title>
-        <meta name="description" content="Professional Fitness Tracking" />
-      </Head>
+      <SEO 
+        title="GoFit Dashboard" 
+        description="View your fitness statistics, track progress, and manage your GoFit profile."
+      />
 
-      <div className="min-h-screen bg-gray-50 text-gray-900 font-['Inter'] flex flex-col items-center justify-center sm:p-4 transition-colors">
+      <div className="min-h-screen bg-gray-50 text-gray-900 font-sans flex flex-col items-center justify-center transition-colors">
         <AuthModal
           isOpen={showAuth && !isLoggedIn}
           onClose={() => setShowAuth(false)}
           onSuccess={handleAuthSuccess}
         />
 
-        <div className="w-full sm:max-w-2xl h-[100dvh] sm:h-[90vh] sm:max-h-[850px] bg-white sm:border border-gray-200 sm:rounded-3xl shadow-sm flex flex-col overflow-hidden relative">
+        <div className="w-full h-[100dvh] bg-white flex flex-col overflow-hidden relative">
           <header className="flex-shrink-0 flex items-center justify-between p-4 border-b border-gray-100 bg-white/90 backdrop-blur-md z-10">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 lg:ml-4">
               <img src="/logo.png" alt="GoFit" className="w-8 h-8 rounded-full border border-gray-100 object-cover" />
-              <h1 className="text-xl font-bold tracking-tight text-gray-900 font-['Outfit']">GoFit</h1>
+              <h1 className="text-xl font-bold tracking-tight text-gray-900 font-outfit">GoFit</h1>
             </div>
             <div className="flex items-center gap-3">
               {userStats && (
@@ -171,16 +167,18 @@ const Home: NextPage = () => {
                 userStats={userStats}
                 runHistory={runHistory}
                 currentUser={currentUser}
-                onRefresh={fetchData}
+                onRefresh={handleRefreshProfile}
               />
             </div>
           </main>
 
-          <nav className="flex-shrink-0 grid grid-cols-4 gap-2 p-2 pt-3 border-t border-gray-100 bg-white/90 backdrop-blur-lg fixed bottom-0 w-full sm:static sm:w-auto z-20 pb-safe">
+          <nav className="flex-shrink-0 flex justify-center gap-2 p-2 pt-3 border-t border-gray-100 bg-white/90 backdrop-blur-lg fixed bottom-0 w-full sm:static z-20 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <div className="grid grid-cols-4 w-full max-w-md gap-2">
             <NavItem label="Home" icon={<BarChart2 className="w-6 h-6" />} isActive={activeTab === 'dashboard'} onClick={() => { SoundManager.playClick(); setActiveTab('dashboard'); }} />
             <NavItem label="Map" icon={<MapIcon className="w-6 h-6" />} isActive={activeTab === 'map'} onClick={() => { SoundManager.playClick(); setActiveTab('map'); }} />
             <NavItem label="Stats" icon={<Trophy className="w-6 h-6" />} isActive={activeTab === 'stats'} onClick={() => { SoundManager.playClick(); setActiveTab('stats'); }} />
             <NavItem label="Profile" icon={<User className="w-6 h-6" />} isActive={activeTab === 'profile'} onClick={() => { SoundManager.playClick(); setActiveTab('profile'); }} />
+            </div>
           </nav>
         </div>
       </div>

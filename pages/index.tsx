@@ -1,13 +1,13 @@
-import Head from 'next/head';
+import SEO from '../components/SEO';
 import Link from 'next/link';
 
 export default function LandingPage() {
     return (
         <>
-            <Head>
-                <title>GoFit - Professional Fitness Experience</title>
-                <meta name="description" content="Elevate your fitness journey with GoFit." />
-            </Head>
+            <SEO 
+                title="GoFit - Professional Fitness Experience"
+                description="Elevate your fitness journey with GoFit. Track your athletic progress, connect with peers, and reach milestones."
+            />
 
             <div className="bg-white text-gray-900 font-['Inter'] overflow-x-hidden min-h-screen">
                 {/* Navigation */}
