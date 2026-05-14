@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import useSWR from 'swr';
 import type { NextPage } from 'next';
+import Image from 'next/image';
 import SEO from '../components/SEO';
 import { BarChart2, User, Trophy, Map as MapIcon, Loader2 } from 'lucide-react';
 import * as api from '../lib/api';
@@ -97,7 +98,7 @@ const Home: NextPage = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <img src="/logo.png" alt="GoFit" className="w-20 h-20 mx-auto mb-6 rounded-2xl animate-pulse object-cover" />
+          <Image src="/logo.png" alt="GoFit" width={80} height={80} className="mx-auto mb-6 rounded-2xl animate-pulse object-cover" />
           <div className="flex items-center gap-3 text-gray-500 justify-center">
             <Loader2 className="w-5 h-5 animate-spin" />
             <span className="text-sm font-medium">Loading Workspace</span>
@@ -124,7 +125,7 @@ const Home: NextPage = () => {
         <div className="w-full h-[100dvh] bg-white flex flex-col overflow-hidden relative">
           <header className="flex-shrink-0 flex items-center justify-between p-4 border-b border-gray-100 bg-white/90 backdrop-blur-md z-10">
             <div className="flex items-center gap-2 lg:ml-4">
-              <img src="/logo.png" alt="GoFit" className="w-8 h-8 rounded-full border border-gray-100 object-cover" />
+              <Image src="/logo.png" alt="GoFit" width={32} height={32} className="rounded-full border border-gray-100 object-cover" />
               <h1 className="text-xl font-bold tracking-tight text-gray-900 font-outfit">GoFit</h1>
             </div>
             <div className="flex items-center gap-3">
@@ -134,9 +135,9 @@ const Home: NextPage = () => {
                   <p className="text-xs text-gray-500">Rank #{userStats.rank}</p>
                 </div>
               )}
-              <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 bg-gray-50 transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 bg-gray-50 transition-all cursor-pointer relative">
                 {currentUser?.avatar_url ? (
-                  <img src={currentUser.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                  <Image src={currentUser.avatar_url} alt="Profile" fill className="object-cover" />
                 ) : (
                   <div className="w-full h-full bg-gray-100" />
                 )}

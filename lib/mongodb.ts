@@ -24,13 +24,19 @@ async function connectToDatabase(): Promise<MongoConnection> {
     throw new Error('Please define the MONGODB_URI environment variable');
   }
 
-  try {
+    try {
     const client = new MongoClient(MONGODB_URI);
     await client.connect();
     const db = client.db(MONGODB_DB);
 
     cachedClient = client;
     cachedDb = db;
+
+    // Initialize indexes in the background
+    db.collection('users').createIndex({ email: 1 }, { unique: true, background: true }).catch(console.error);
+    db.collection('users').createIndex({ username: 1 }, { unique: true, background: true }).catch(console.error);
+    db.collection('activities').createIndex({ user_id: 1, created_at: -1 }, { background: true }).catch(console.error);
+    db.collection('friend_requests').createIndex({ sender_id: 1, receiver_id: 1 }, { unique: true, background: true }).catch(console.error);
 
     console.log('Successfully connected to MongoDB');
     return { client, db };

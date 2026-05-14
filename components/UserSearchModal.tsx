@@ -1,4 +1,5 @@
 import { FC, useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Search, X, UserPlus, Loader2 } from 'lucide-react';
 import * as api from '../lib/api';
 import { SoundManager } from '../lib/sound';
@@ -46,15 +47,17 @@ export const UserSearchModal: FC<{ isOpen: boolean; onClose: () => void }> = ({ 
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                         <Search className="w-5 h-5 text-gray-500" /> Find Users
                     </h2>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <button onClick={onClose} aria-label="Close search" className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
                 <div className="p-4 space-y-4">
                     <div className="relative">
+                        <label htmlFor="search-users" className="sr-only">Search users</label>
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <input
+                            id="search-users"
                             type="text"
                             placeholder="Search by username..."
                             className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-gray-800 border border-transparent focus:border-cyan-500 rounded-xl outline-none text-gray-900 dark:text-white transition-all"
@@ -74,8 +77,8 @@ export const UserSearchModal: FC<{ isOpen: boolean; onClose: () => void }> = ({ 
                             results.map(user => (
                                 <div key={user.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                                            <img src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} alt={user.username} className="w-full h-full object-cover" />
+                                        <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden relative">
+                                            <Image fill src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} alt={user.username} className="object-cover" />
                                         </div>
                                         <div>
                                             <p className="font-bold text-gray-900 dark:text-white">{user.username}</p>
@@ -86,6 +89,7 @@ export const UserSearchModal: FC<{ isOpen: boolean; onClose: () => void }> = ({ 
                                         <span className="text-xs font-bold text-green-500 px-3 py-1.5 bg-green-500/10 rounded-full">Sent ✓</span>
                                     ) : (
                                         <button
+                                            aria-label={`Send friend request to ${user.username}`}
                                             onClick={() => handleSendRequest(user.id, user.username)}
                                             className="p-2 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500 hover:text-white rounded-full transition-all transform hover:scale-110"
                                         >

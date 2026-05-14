@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Image from 'next/image';
 import { loginUser, registerUser } from '../lib/api';
 import { useToast } from './Toast';
 import { Eye, EyeOff, Mail, Lock, User, Loader2 } from 'lucide-react';
@@ -53,7 +54,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all">
       <div className="bg-white p-8 rounded-3xl w-full max-w-md border border-gray-100 shadow-xl">
         <div className="text-center mb-8">
-          <img src="/logo.png" alt="GoFit" className="w-16 h-16 mx-auto mb-4 rounded-xl object-cover border border-gray-100 shadow-sm" />
+          <Image src="/logo.png" alt="GoFit" width={64} height={64} className="mx-auto mb-4 rounded-xl object-cover border border-gray-100 shadow-sm" />
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
             {isLogin ? 'Welcome Back' : 'Join GoFit'}
           </h2>
@@ -65,8 +66,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
             <div className="relative group">
+              <label htmlFor="username" className="sr-only">Username</label>
               <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-gray-900 transition-colors" />
               <input
+                id="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -79,8 +82,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
           )}
 
           <div className="relative group">
+            <label htmlFor="email" className="sr-only">Email address</label>
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-gray-900 transition-colors" />
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -91,8 +96,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
           </div>
 
           <div className="relative group">
+            <label htmlFor="password" className="sr-only">Password</label>
             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-gray-900 transition-colors" />
             <input
+              id="password"
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -104,6 +111,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}

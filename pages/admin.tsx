@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { NextPage } from 'next';
+import Image from 'next/image';
 import SEO from '../components/SEO';
 import Link from 'next/link';
 import {
@@ -250,7 +251,9 @@ const Admin: NextPage = () => {
                                         {recentUsers.map(user => (
                                             <div key={user.id} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl">
                                                 <div className="flex items-center gap-3">
-                                                    <img src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} alt="" className="w-9 h-9 rounded-full bg-gray-700" />
+                                                    <div className="w-9 h-9 rounded-full bg-gray-700 relative overflow-hidden">
+                                                        <Image fill src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} alt="" className="object-cover" />
+                                                    </div>
                                                     <div><p className="font-semibold text-sm">{user.username}</p><p className="text-xs text-gray-500">{user.email}</p></div>
                                                 </div>
                                                 <div className="text-right"><p className="text-sm font-bold text-cyan-400">{user.total_points} XP</p><p className="text-xs text-gray-500">{user.total_distance} km</p></div>
@@ -398,7 +401,9 @@ const Admin: NextPage = () => {
                                                 <div key={fb.id} className="p-5 hover:bg-gray-800/10 transition-colors">
                                                     <div className="flex items-start justify-between gap-4">
                                                         <div className="flex items-center gap-3">
-                                                            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${fb.username}`} alt="" className="w-9 h-9 rounded-full bg-gray-700 shrink-0" />
+                                                            <div className="w-9 h-9 rounded-full bg-gray-700 shrink-0 relative overflow-hidden">
+                                                                <Image fill src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${fb.username}`} alt="" className="object-cover" />
+                                                            </div>
                                                             <div>
                                                                 <p className="font-semibold text-sm">{fb.username || 'Anonymous'}</p>
                                                                 <p className="text-xs text-gray-500">{fb.email} · {new Date(fb.created_at).toLocaleDateString()}</p>

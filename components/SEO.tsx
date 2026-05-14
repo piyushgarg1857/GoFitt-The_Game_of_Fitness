@@ -44,6 +44,28 @@ export default function SEO({
       <meta property="twitter:title" content={pageTitle} />
       <meta property="twitter:description" content={description} />
       <meta property="twitter:image" content={ogImage} />
+
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "GoFit",
+            "operatingSystem": "Web",
+            "applicationCategory": "HealthAndFitnessApplication",
+            "description": description,
+            "url": url,
+            "image": `https://gofitt.vercel.app${ogImage}`,
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            }
+          })
+        }}
+      />
     </Head>
   );
 }

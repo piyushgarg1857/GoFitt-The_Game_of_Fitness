@@ -5,6 +5,7 @@ import { SoundManager } from '../lib/sound';
 import { SettingsModal } from './SettingsModal';
 import { UserSearchModal } from './UserSearchModal';
 import { useToast } from './Toast';
+import Image from 'next/image';
 
 const AttributeCard: FC<{ label: string; value: number; icon: ReactNode; color: string; sub: string }> = ({ label, value, icon, color, sub }) => (
     <div className="bg-white dark:bg-gray-800/90 backdrop-blur-md border border-gray-100 dark:border-gray-700/50 p-5 rounded-2xl relative group hover:border-gray-200 dark:hover:border-gray-600 transition-all duration-300 shadow-sm">
@@ -125,8 +126,8 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ userStats, runHistory, currentU
 
                 {/* Avatar Section */}
                 <div className="relative flex-shrink-0 group cursor-pointer" onClick={() => setIsEditingAvatar(!isEditingAvatar)}>
-                    <div className="w-28 h-28 rounded-full border border-gray-200 dark:border-gray-700 overflow-hidden bg-gray-50 dark:bg-gray-900 group-hover:shadow-md transition-all p-1">
-                        <img src={avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Agent'} alt="Profile" className="w-full h-full object-cover rounded-full" />
+                    <div className="w-28 h-28 rounded-full border border-gray-200 dark:border-gray-700 overflow-hidden bg-gray-50 dark:bg-gray-900 group-hover:shadow-md transition-all p-1 relative">
+                        <Image fill src={avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Agent'} alt="Profile" className="object-cover rounded-full" />
                     </div>
                     <div className="absolute bottom-0 right-0 bg-white dark:bg-gray-800 p-2 rounded-full shadow border border-gray-100 dark:border-gray-700 text-gray-500 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
                         <Edit2 className="w-4 h-4" />
@@ -193,7 +194,9 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ userStats, runHistory, currentU
                                 }}
                                 className={`shrink-0 snap-center w-16 h-16 rounded-full border-2 overflow-hidden transition-all duration-200 hover:scale-105 ${avatarUrl === url ? 'border-cyan-500 shadow-md shadow-cyan-500/20' : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600 ring-1 ring-black/5 dark:ring-white/10'}`}
                             >
-                                <img src={url} className="w-full h-full bg-gray-50 dark:bg-gray-900" alt={`Avatar option ${i}`} />
+                                <div className="relative w-full h-full">
+                                    <Image fill src={url} className="bg-gray-50 dark:bg-gray-900 object-cover" alt={`Avatar option ${i}`} sizes="64px" />
+                                </div>
                             </button>
                         ))}
                     </div>

@@ -1,5 +1,6 @@
 import SEO from '../components/SEO';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function LandingPage() {
     return (
@@ -14,7 +15,7 @@ export default function LandingPage() {
                 <nav className="fixed w-full z-50 top-0 left-0 border-b border-gray-100 bg-white/90 backdrop-blur-md">
                     <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <img src="/logo.png" alt="GoFit" className="w-10 h-10 rounded-full border border-gray-100 object-cover" />
+                            <Image src="/logo.png" alt="GoFit" width={40} height={40} className="rounded-full border border-gray-100 object-cover" />
                             <span className="text-xl font-bold font-['Outfit'] tracking-wide text-gray-900">GoFit</span>
                         </div>
                         <div className="hidden md:flex items-center gap-8">
@@ -68,7 +69,7 @@ export default function LandingPage() {
 
                         <div className="flex justify-center lg:justify-end relative">
                             <div className="relative z-10">
-                                <img src="/logo.png" alt="GoFit Core" className="w-96 rounded-3xl shadow-xl border border-gray-100 object-cover" />
+                                <Image src="/logo.png" alt="GoFit Core" width={384} height={384} className="rounded-3xl shadow-xl border border-gray-100 object-cover" />
 
                                 <div className="absolute -right-8 top-10 bg-white border border-gray-100 shadow-lg p-4 rounded-2xl flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
@@ -133,7 +134,7 @@ export default function LandingPage() {
                 <footer className="py-10 border-t border-gray-100 bg-white text-gray-900">
                     <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
                         <div className="flex items-center gap-2">
-                            <img src="/logo.png" alt="GoFit" className="w-6 h-6 rounded-full object-cover" />
+                            <Image src="/logo.png" alt="GoFit" width={24} height={24} className="rounded-full object-cover" />
                             <span className="font-bold text-gray-500">GoFit © 2026</span>
                         </div>
                         <div className="flex gap-6 text-sm text-gray-500">
