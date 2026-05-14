@@ -29,6 +29,8 @@ export default function SEO({
       <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
       <meta name="language" content="English" />
       <link rel="canonical" href={url} />
+      {/* Google Search Console Verification */}
+      <meta name="google-site-verification" content="UAdNRgV0HLrS0gTIE5f0nxZ9_FADzkovHo4-YOcyXz8" />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content="website" />
