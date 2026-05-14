@@ -77,7 +77,7 @@ function setCachedUser(user: UserProfile) {
 }
 
 // API request helper — relies on HttpOnly cookie sent automatically by browser
-async function apiRequest(path: string, options: RequestInit = {}): Promise<unknown> {
+async function apiRequest(path: string, options: RequestInit = {}): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         ...(options.headers as Record<string, string> || {}),
@@ -92,7 +92,7 @@ async function apiRequest(path: string, options: RequestInit = {}): Promise<unkn
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error((data as { error?: string }).error || `Request failed with status ${response.status}`);
+        throw new Error(data.error || `Request failed with status ${response.status}`);
     }
 
     return data;

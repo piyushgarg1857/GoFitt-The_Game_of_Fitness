@@ -262,7 +262,8 @@ const MapScreen: FC<MapScreenProps> = ({ currentUser }) => {
                 const duration = (Date.now() - startTime) / 1000;
 
                 if (distance > 0.01) {
-                    api.saveRun(distance, duration, currentPath).then(res => {
+                    api.saveRun(distance, duration, currentPath).then(r => {
+                        const res = r as { success: boolean; error?: string };
                         if (res.success) {
                             SoundManager.playSuccess();
                             addToast(`Run saved! ${distance.toFixed(2)} km in ${(duration / 60).toFixed(1)} min`, 'success');
@@ -535,7 +536,7 @@ const MapScreen: FC<MapScreenProps> = ({ currentUser }) => {
                 [closedPath],
                 center.geometry.coordinates as [number, number],
                 area
-            );
+            ) as { success: boolean; error?: string };
 
             if (res.success) {
                 setIsRunning(false);
