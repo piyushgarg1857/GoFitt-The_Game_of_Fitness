@@ -54,13 +54,17 @@ export interface Activity {
 
 // Token management
 function getToken(): string | null {
-    // Only used as fallback or if we still have it from before
+    // We use HttpOnly cookies, so we don't have direct access to the token in JS.
+    // Return a dummy value if we have a cached user to allow API requests to proceed.
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('gofitt_token');
+    return localStorage.getItem('gofitt_token') || (localStorage.getItem('gofitt_user') ? 'httponly-cookie-active' : null);
 }
 
 function setToken(token: string) {
-    // No-op for new logins since we use HttpOnly cookies, but keep for fallback
+    if (typeof window !== 'undefined' && token) {
+        // We can still store it for fallback, but it's not strictly necessary.
+        localStorage.setItem('gofitt_token', token);
+    }
 }
 
 async function removeToken() {
@@ -166,7 +170,8 @@ export async function logout() {
 }
 
 export function isLoggedIn(): boolean {
-    return !!getToken();
+    if (typeof window === 'undefined') return false;
+    return !!localStorage.getItem('gofitt_user') || !!localStorage.getItem('gofitt_token');
 }
 
 export function getCurrentUser(): UserProfile | null {
